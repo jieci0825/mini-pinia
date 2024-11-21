@@ -13,7 +13,16 @@ export const useCounterStore = defineStore('counter', {
   }),
   actions: {
     increase() {
+      // * success case:
       this.count++
+      return 'hello world'
+
+      // * error case:
+      // return new Promise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     reject('this is error')
+      //   }, 2000)
+      // })
     }
   },
   getters: {

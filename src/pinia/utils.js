@@ -21,3 +21,7 @@ export const hasOwn = (value, key) => {
 export const hasChanged = (a, b) => {
   return !Object.is(a, b)
 }
+
+export const isPromise = val => {
+  return isObject(val) && isFunction(val.then)
+}

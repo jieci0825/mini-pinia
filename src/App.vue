@@ -34,6 +34,16 @@ const reset = () => {
 //   console.log(state)
 //   console.log('行为：', mutation)
 // })
+
+useCounter.$onAction(({ name, store, after, onError }) => {
+  console.log(`actions【${name}】开始执行`)
+  after(res => {
+    console.log('状态更新执行完毕了-after: ', res)
+  })
+  onError(err => {
+    console.log('状态更新执行失败-onError: ', err)
+  })
+})
 </script>
 
 <template>

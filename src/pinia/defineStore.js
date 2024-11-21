@@ -14,9 +14,11 @@ import {
   hasOwn,
   isFunction,
   isObject,
+  isPromise,
   isString
 } from './utils'
 import { PiniaSymbol } from './rootStore'
+import { addSubscription, triggerSubscriptions } from './publishSubscribe'
 
 export function defineStore(idOrOptions, setup) {
   // 处理参数
@@ -107,10 +109,16 @@ function createSetupStore(id, setup, pinia) {
     })
   }
 
+  const actionSubscriptions = []
+  function $onAction(callback) {
+    addSubscription.bind(null, actionSubscriptions, callback)()
+  }
+
   const partialStore = {
     $patch,
     $reset,
-    $subscribe
+    $subscribe,
+    $onAction
   }
 
   // 每一个 store 都应该是一个响应式对象
@@ -124,10 +132,47 @@ function createSetupStore(id, setup, pinia) {
     return scope.run(() => setup())
   })
 
-  function wrapActions(action) {
+  function wrapActions(name, action) {
     return function (...args) {
       // 触发 actions 的时候可以加入一些其他逻辑
-      const result = action.apply(store, args)
+      const afterCallbacks = []
+      const onErrorCallbacks = []
+
+      function after(callback) {
+        afterCallbacks.push(callback)
+      }
+
+      function onError(callback) {
+        onErrorCallbacks.push(callback)
+      }
+
+      // name 即为 actions 中的函数名
+      triggerSubscriptions(actionSubscriptions, { name, store, after, onError })
+
+      let result
+      try {
+        result = action.apply(store, args)
+      } catch (error) {
+        triggerSubscriptions(onErrorCallbacks, error)
+      }
+
+      // 如果这个 aciotns 返回的是一个 Promise，那么就等待 Promise 执行完成后再触发回调
+      if (isPromise(result)) {
+        result
+          .then(res => {
+            // 成功
+            triggerSubscriptions(afterCallbacks, res)
+          })
+          .catch(error => {
+            // 失败
+            triggerSubscriptions(onErrorCallbacks, error)
+            return Promise.reject(error)
+          })
+      } else {
+        // 如果 actions 返回的不是 Promise，那么直接触发回调
+        triggerSubscriptions(afterCallbacks, result)
+      }
+
       return result
     }
   }
@@ -136,7 +181,7 @@ function createSetupStore(id, setup, pinia) {
   for (const key in setupStore) {
     const value = setupStore[key]
     if (isFunction(value)) {
-      setupStore[key] = wrapActions(value)
+      setupStore[key] = wrapActions(key, value)
     }
   }
 
