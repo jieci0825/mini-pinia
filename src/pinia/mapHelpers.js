@@ -1,4 +1,4 @@
-import { isArray, isObject } from './utils'
+import { hasChanged, isArray, isObject } from './utils'
 
 export function mapState(useStore, keysOrMapper) {
   keysOrMapper = normalization(keysOrMapper)
@@ -46,6 +46,32 @@ export function mapActions(useStore, keysOrMapper) {
       // 此时在 actions 中拿到的就是一个函数
       const fn = store[storeKey]
       return fn.apply(store, args)
+    }
+    return acc
+  }, {})
+
+  return result
+}
+
+export function mapWritableState(useStore, keysOrMapper) {
+  keysOrMapper = normalization(keysOrMapper)
+
+  const keys = Object.keys(keysOrMapper) // ['count', 'doubleCount', 'f']
+  // 返回一个对象
+  const result = keys.reduce((acc, key) => {
+    const storeKey = keysOrMapper[key]
+    // 返回一个对象，包含 getter 和 setter
+    acc[key] = {
+      get() {
+        const store = useStore()
+        return store[storeKey]
+      },
+      set(value) {
+        const store = useStore()
+        if (hasChanged(value, store[storeKey])) {
+          store[storeKey] = value
+        }
+      }
     }
     return acc
   }, {})

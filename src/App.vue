@@ -1,7 +1,7 @@
 <script>
 import { mapState } from '@/pinia'
 import { useCounterStore } from '@/store/counterStore'
-import { mapActions } from './pinia/mapHelpers'
+import { mapActions, mapWritableState } from './pinia/mapHelpers'
 export default {
   computed: {
     // array
@@ -9,7 +9,9 @@ export default {
     // object
     ...mapState(useCounterStore, {
       f: 'fruits' // fruits 为要取的值，f为重命名
-    })
+    }),
+    // 可以双向绑定，直接读取和修改
+    ...mapWritableState(useCounterStore, ['flag'])
   },
 
   mounted() {
@@ -39,8 +41,12 @@ export default {
         >{{ fruit }}{{ idx < f.length - 1 ? '、' : '' }}</span
       >
     </div>
+    <div>
+      <span>{{ flag ? '灯亮' : '灯灭' }}</span>
+    </div>
     <div class="btns">
       <button @click="increase(count)">增加</button>
+      <button @click="flag = !flag">切换</button>
     </div>
   </div>
 </template>

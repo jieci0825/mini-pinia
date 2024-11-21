@@ -9,7 +9,8 @@ export const useCounterStore = defineStore('counter', {
       name: '张三',
       age: 18
     },
-    fruits: ['苹果', '香蕉', '橘子']
+    fruits: ['苹果', '香蕉', '橘子'],
+    flag: false
   }),
   actions: {
     increase(val) {
