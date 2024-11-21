@@ -114,11 +114,22 @@ function createSetupStore(id, setup, pinia) {
     addSubscription.bind(null, actionSubscriptions, callback)()
   }
 
+  // 销毁 store
+  function $dispose() {
+    // 停止 effectScope
+    scope.stop()
+    // 清空 actionSubscriptions
+    actionSubscriptions = []
+    // 删除 store
+    pinia._s.delete(id)
+  }
+
   const partialStore = {
     $patch,
     $reset,
     $subscribe,
-    $onAction
+    $onAction,
+    $dispose
   }
 
   // 每一个 store 都应该是一个响应式对象
