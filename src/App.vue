@@ -2,7 +2,6 @@
 import { useCounterStore } from './store/counterStore'
 
 const useCounter = useCounterStore()
-console.log(useCounter)
 
 const { increase: inc } = useCounter
 
@@ -30,6 +29,11 @@ const handleClick = () => {
 const reset = () => {
   useCounter.$reset()
 }
+
+// useCounter.$subscribe((mutation, state) => {
+//   console.log(state)
+//   console.log('行为：', mutation)
+// })
 </script>
 
 <template>
@@ -52,6 +56,7 @@ const reset = () => {
     <div class="btns">
       <button @click="reset">重置</button>
       <button @click="handleClick">批量增加</button>
+      <button @click="increase">计数 +1</button>
     </div>
   </div>
 </template>

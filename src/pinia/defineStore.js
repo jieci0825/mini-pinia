@@ -5,7 +5,8 @@ import {
   inject,
   isRef,
   reactive,
-  toRefs
+  toRefs,
+  watch
 } from 'vue'
 import {
   extend,
@@ -81,9 +82,9 @@ function mergeReactiveObject(target, partialState) {
 function createSetupStore(id, setup, pinia) {
   function $patch(partialStateOrMutation) {
     if (isFunction(partialStateOrMutation)) {
-      partialStateOrMutation(store)
+      partialStateOrMutation(pinia.state.value[id])
     } else if (isObject(partialStateOrMutation)) {
-      mergeReactiveObject(store, partialStateOrMutation)
+      mergeReactiveObject(pinia.state.value[id], partialStateOrMutation)
     }
   }
 
@@ -93,9 +94,23 @@ function createSetupStore(id, setup, pinia) {
     throw new Error('$reset 只能在 options api 中使用')
   }
 
+  function $subscribe(callback, options) {
+    scope.run(() => {
+      watch(
+        pinia.state.value[id],
+        (newValue, oldValue) => {
+          // todo 行为可以完善的更详细
+          callback({ type: 'direct', id }, newValue)
+        },
+        options
+      )
+    })
+  }
+
   const partialStore = {
     $patch,
-    $reset
+    $reset,
+    $subscribe
   }
 
   // 每一个 store 都应该是一个响应式对象
