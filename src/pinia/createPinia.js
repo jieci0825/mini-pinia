@@ -11,6 +11,8 @@ export function createPinia() {
   // run 方法的返回值就是这个 fn 的返回结果
   const state = scope.run(() => ref({}))
 
+  const _plugins = []
+
   // 通过 markRaw 方法让其在 Vue 的响应式系统中不被追踪。即不会对这个对象进行依赖收集和响应式更新。
   //  - 并通过 markRaw 方法将这个对象标记为不可变对象，就不会被外部修改为一个响应式对象
   const pinia = markRaw({
@@ -21,7 +23,13 @@ export function createPinia() {
       // 将pinia实例挂载到全局属性上
       app.config.globalProperties.$pinia = pinia
     },
+    use(plugin) {
+      _plugins.push(plugin)
+      // 返回 this，实现链式调用
+      return this
+    },
     _app: null,
+    _p: _plugins,
     // pinia 完整的状态
     state,
     // 管理整个 effectScope

@@ -207,9 +207,17 @@ function createSetupStore(id, setup, pinia) {
 
   extend(store, setupStore)
 
+  pinia._p.forEach(plugin => {
+    const context = {
+      store,
+      pinia,
+      app: pinia._app
+    }
+    extend(store, plugin(context))
+  })
+
   // 将处理好的 store 存储到 pinia 实例映射表中
   pinia._s.set(id, store)
-
   return store
 }
 
