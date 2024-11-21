@@ -8,4 +8,5 @@
   - [x] Getter
   - [x] Action（$onAction）
   - [X] 插件
+  - [X] 辅助函数（mapState、mapActions、）
 
