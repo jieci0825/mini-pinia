@@ -1,5 +1,11 @@
-# Vue 3 + Vite
+# mini-pinia
+- 本项目并没有采用第三方包的方式构建，只是简单的用一个 pinia 文件来实现。
+- 并适配了两个案例，分别为 App-setup.vue 和 App.vue，前者表示在 Composition Api 风格中使用，后者表示在 Options Api 风格中使用
+- 使用方式与 Pinia 官方文档描述的一样
+- 实现了如下功能：
+  - [x] 定义 Store
+  - [x] State（$state、$patch、$reset、$subscribe）
+  - [x] Getter
+  - [x] Action（$onAction）
+  - [X] 插件
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
