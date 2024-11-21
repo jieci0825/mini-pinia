@@ -12,6 +12,8 @@ export function isObject(value) {
 
 export const extend = Object.assign
 
+export const isArray = Array.isArray
+
 const hasOwnProperty = Object.prototype.hasOwnProperty
 
 export const hasOwn = (value, key) => {

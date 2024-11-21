@@ -12,7 +12,8 @@ export const useCounterStore = defineStore('counter', {
     fruits: ['苹果', '香蕉', '橘子']
   }),
   actions: {
-    increase() {
+    increase(val) {
+      console.log('increase', val)
       // * success case:
       this.count++
       return 'hello world'

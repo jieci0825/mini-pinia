@@ -1,5 +1,5 @@
 import { effectScope, markRaw, ref } from 'vue'
-import { PiniaSymbol } from './rootStore'
+import { PiniaSymbol, setActivePinia } from './rootStore'
 
 export function createPinia() {
   // 创建一个响应式作用域
@@ -37,6 +37,8 @@ export function createPinia() {
     // 存储所有的 store
     _s: new Map()
   })
+
+  setActivePinia(pinia)
 
   return pinia
 }

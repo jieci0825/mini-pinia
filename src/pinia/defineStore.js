@@ -17,7 +17,7 @@ import {
   isPromise,
   isString
 } from './utils'
-import { PiniaSymbol } from './rootStore'
+import { getActivePinia, PiniaSymbol } from './rootStore'
 import { addSubscription, triggerSubscriptions } from './publishSubscribe'
 
 export function defineStore(idOrOptions, setup) {
@@ -28,15 +28,19 @@ export function defineStore(idOrOptions, setup) {
 
   function useStore() {
     const currentInstance = getCurrentInstance()
-    if (!currentInstance) {
-      console.warn('useStore 必须在组件中使用')
-      return
+    const activePinia = getActivePinia()
+
+    // 当使用 options api 时，使用 actions 时就会导致拿不到 currentInstance，所以需要手动获取激活的 pinia
+    if (!currentInstance && !activePinia) {
+      console.warn('useStore 需要在 setup 中使用')
     }
 
     const isSetupStore = isFunction(setup)
 
     // 获取全局的 pinia 实例
-    const piniaIns = inject(PiniaSymbol)
+    const piniaIns = currentInstance ? inject(PiniaSymbol) : activePinia
+
+    if (!piniaIns) return
 
     // 如果当前 id 没有注册过，则注册
     if (!piniaIns._s.has(id)) {
