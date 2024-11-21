@@ -11,3 +11,13 @@ export function isObject(value) {
 }
 
 export const extend = Object.assign
+
+const hasOwnProperty = Object.prototype.hasOwnProperty
+
+export const hasOwn = (value, key) => {
+  return hasOwnProperty.call(value, key)
+}
+
+export const hasChanged = (a, b) => {
+  return !Object.is(a, b)
+}

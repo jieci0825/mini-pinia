@@ -11,8 +11,20 @@ const increase = () => {
   // useCounter.increase()
   inc()
 }
-const decrease = () => {
-  useCounter.count--
+
+const handleClick = () => {
+  // 对象式
+  // const fruits = [...useCounter.fruits, '黄桃', '西瓜']
+  // useCounter.$patch({
+  //   count: useCounter.count + 1,
+  //   fruits
+  // })
+
+  // 函数式
+  useCounter.$patch(state => {
+    state.count++
+    state.fruits.push('葡萄', '甜瓜')
+  })
 }
 </script>
 
@@ -27,9 +39,14 @@ const decrease = () => {
       <span>双倍：</span>
       <span>{{ useCounter.doubleCount }}</span>
     </div>
+    <div>
+      <span>水果：</span>
+      <span v-for="(fruit, idx) in useCounter.fruits" :key="idx"
+        >{{ fruit }}{{ idx < useCounter.fruits.length - 1 ? '、' : '' }}</span
+      >
+    </div>
     <div class="btns">
-      <button @click="decrease">-1</button>
-      <button @click="increase">+1</button>
+      <button @click="handleClick">批量增加</button>
     </div>
   </div>
 </template>

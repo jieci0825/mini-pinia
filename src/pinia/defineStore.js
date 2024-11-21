@@ -3,10 +3,18 @@ import {
   effectScope,
   getCurrentInstance,
   inject,
+  isRef,
   reactive,
   toRefs
 } from 'vue'
-import { extend, isFunction, isObject, isString } from './utils'
+import {
+  extend,
+  hasChanged,
+  hasOwn,
+  isFunction,
+  isObject,
+  isString
+} from './utils'
 import { PiniaSymbol } from './rootStore'
 
 export function defineStore(idOrOptions, setup) {
@@ -46,9 +54,45 @@ export function defineStore(idOrOptions, setup) {
   return useStore
 }
 
+function mergeReactiveObject(target, partialState) {
+  for (const key in partialState) {
+    // 排除掉原型链上的属性
+    if (!hasOwn(partialState, key)) {
+      continue
+    }
+
+    const oldValue = target[key]
+    const newValue = partialState[key]
+
+    // 新旧值都是对象，且不能是 ref 才进行递归处理
+    if (isObject(newValue) && isObject(oldValue) && !isRef(newValue)) {
+      target[key] = mergeReactiveObject(oldValue, newValue)
+    } else {
+      // 两个值发生变化时才更新
+      if (hasChanged(oldValue, newValue)) {
+        target[key] = newValue
+      }
+    }
+  }
+
+  return target
+}
+
 function createSetupStore(id, setup, pinia) {
+  function $patch(partialStateOrMutation) {
+    if (isFunction(partialStateOrMutation)) {
+      partialStateOrMutation(store)
+    } else if (isObject(partialStateOrMutation)) {
+      mergeReactiveObject(store, partialStateOrMutation)
+    }
+  }
+
+  const partialStore = {
+    $patch
+  }
+
   // 每一个 store 都应该是一个响应式对象
-  const store = reactive({})
+  const store = reactive(partialStore)
 
   // 单独的 effectScope
   let scope
