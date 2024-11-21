@@ -109,7 +109,7 @@ function createSetupStore(id, setup, pinia) {
     })
   }
 
-  const actionSubscriptions = []
+  let actionSubscriptions = []
   function $onAction(callback) {
     addSubscription.bind(null, actionSubscriptions, callback)()
   }

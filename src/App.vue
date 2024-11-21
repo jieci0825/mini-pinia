@@ -44,6 +44,11 @@ useCounter.$onAction(({ name, store, after, onError }) => {
     console.log('状态更新执行失败-onError: ', err)
   })
 })
+
+setTimeout(() => {
+  console.log('销毁 useCounter')
+  useCounter.$dispose()
+}, 2000)
 </script>
 
 <template>
