@@ -26,6 +26,10 @@ const handleClick = () => {
     state.fruits.push('葡萄', '甜瓜')
   })
 }
+
+const reset = () => {
+  useCounter.$reset()
+}
 </script>
 
 <template>
@@ -46,6 +50,7 @@ const handleClick = () => {
       >
     </div>
     <div class="btns">
+      <button @click="reset">重置</button>
       <button @click="handleClick">批量增加</button>
     </div>
   </div>

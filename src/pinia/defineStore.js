@@ -87,8 +87,15 @@ function createSetupStore(id, setup, pinia) {
     }
   }
 
+  function $reset() {
+    // $reset 方法无法在 setup 函数中调用(即不支持 composition api 写法，只能在 options api 写法的时候使用)，因为无法追溯原有的状态
+    // 素以这里如果调用 $reset 方法，就弹出一个报错
+    throw new Error('$reset 只能在 options api 中使用')
+  }
+
   const partialStore = {
-    $patch
+    $patch,
+    $reset
   }
 
   // 每一个 store 都应该是一个响应式对象
@@ -127,9 +134,18 @@ function createSetupStore(id, setup, pinia) {
 }
 
 function createOptionsStore(id, options, pinia) {
+  // state 如果有一定是一个函数
   const { state, actions, getters } = options
 
   const store = createSetupStore(id, setup, pinia)
+  // options api 单独重写 $reset 方法
+  store.$reset = function () {
+    // 因为 state 是函数，每次调用都会返回一个新的对象，所以这里再次调用就会得到一个初始状态
+    const newState = state ? state() : {}
+    store.$patch($state => {
+      extend($state, newState)
+    })
+  }
 
   function setup() {
     pinia.state.value[id] = state ? state() : {}
