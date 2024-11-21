@@ -135,6 +135,15 @@ function createSetupStore(id, setup, pinia) {
   // 每一个 store 都应该是一个响应式对象
   const store = reactive(partialStore)
 
+  Object.defineProperty(store, '$state', {
+    get: () => pinia.state.value[id],
+    set: value => {
+      store.$patch(state => {
+        extend(state, value)
+      })
+    }
+  })
+
   // 单独的 effectScope
   let scope
   const setupStore = pinia._e.run(() => {

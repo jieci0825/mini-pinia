@@ -6,7 +6,7 @@ export function createPinia() {
   //  - 这个作用域可以包含多个响应式副作用（effect），并且这些副作用可以一起被停止或清除
   //  - 即将副作用应该一起被管理
   //  - 参数传入 true 表示不会收集子级的 effectScope
-  const scope = effectScope(true)
+  const scope = effectScope()
 
   // run 方法的返回值就是这个 fn 的返回结果
   const state = scope.run(() => ref({}))

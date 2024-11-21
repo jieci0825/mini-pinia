@@ -26,6 +26,13 @@ const handleClick = () => {
   })
 }
 
+const handleUpdate = () => {
+  useCounter.$state = {
+    count: 100,
+    fruits: ['苹果', '香蕉']
+  }
+}
+
 const reset = () => {
   useCounter.$reset()
 }
@@ -45,10 +52,10 @@ useCounter.$onAction(({ name, store, after, onError }) => {
   })
 })
 
-setTimeout(() => {
-  console.log('销毁 useCounter')
-  useCounter.$dispose()
-}, 2000)
+// setTimeout(() => {
+//   console.log('销毁 useCounter')
+//   useCounter.$dispose()
+// }, 2000)
 </script>
 
 <template>
@@ -72,6 +79,7 @@ setTimeout(() => {
       <button @click="reset">重置</button>
       <button @click="handleClick">批量增加</button>
       <button @click="increase">计数 +1</button>
+      <button @click="handleUpdate">修改</button>
     </div>
   </div>
 </template>
